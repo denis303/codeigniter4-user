@@ -4,7 +4,7 @@ namespace denis303\user;
 
 use Exception;
 use Config\Services;
-use App\Models\User;
+use CodeIgniter\Entity;
 
 abstract class BaseUserModel extends \App\Components\BaseModel
 {
@@ -20,14 +20,12 @@ abstract class BaseUserModel extends \App\Components\BaseModel
     protected $allowedFields = [
         self::FIELD_PREFIX . 'name',
         self::FIELD_PREFIX . 'password_hash',
-        self::FIELD_PREFIX . 'password_reset_token',
-        self::FIELD_PREFIX . 'verification_token',
         self::FIELD_PREFIX . 'email',
         self::FIELD_PREFIX . 'created_at',
         self::FIELD_PREFIX . 'updated_at'
     ];
 
-    protected $returnType = User::class;
+    protected $returnType = Entity::class;
 
     public function createUser(array $data, & $error = null)
     {
@@ -47,15 +45,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
             $user->$key = $value;
         }
 
-        if (!$user->user_verification_token)
-        {
-            $this->generateEmailVerificationToken($user);
-        }
-
-        if ($this->defaultStatus)
-        {
-            $this->setStatus($user, $this->defaultStatus);
-        }
+        $this->beforeCreateUser($user, $data);
 
         if (!$this->save($user))
         {
@@ -67,32 +57,31 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         return $user;
     }
 
-    public function setPassword(User $user, string $password)
+    public function beforeCreateUser(Entity $user, array $data)
+    {
+    }
+
+    public function setPassword(Entity $user, string $password)
     {
         $user->{static::FIELD_PREFIX . 'password_hash'} = password_hash($password, PASSWORD_BCRYPT);
     }
 
-    public function setStatus(User $user, $status)
+    public function setStatus(Entity $user, $status)
     {
         $user->status = $status;
     }
 
-    public function generateEmailVerificationToken(User $user)
-    {
-        $user->{static::FIELD_PREFIX . 'verification_token'} = md5(time() . rand(0, PHP_INT_MAX));
-    }
-
-    public function validatePassword(User $user, string $password) : bool
+    public function validatePassword(Entity $user, string $password) : bool
     {
         return password_verify($password, $user->{static::FIELD_PREFIX . 'password_hash'});
     }
 
-    public function getUserEmail(User $user)
+    public function getUserEmail(Entity $user)
     {
         return $user->{static::FIELD_PREFIX . 'email'};
     }
 
-    public function getUserName(User $user)
+    public function getUserName(Entity $user)
     {
         return $user->{static::FIELD_PREFIX . 'name'};
     }    

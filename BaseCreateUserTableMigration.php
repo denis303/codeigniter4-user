@@ -22,31 +22,14 @@ abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigratio
                 'type' => 'VARCHAR',
                 'constraint' => '255'
             ],
-            static::FIELD_PREFIX . 'password_hash' => [
-                'type' => 'VARCHAR',
-                'constraint' => '60'
-            ],
-            static::FIELD_PREFIX . 'password_reset_token' => [
-                'type' => 'VARCHAR',
-                'constraint' => '32',
-                'unique' => true,
-                'null' => true
-            ],
-            static::FIELD_PREFIX . 'verification_token' => [
-                'type' => 'VARCHAR',
-                'constraint' => '32',
-                'unique' => true,
-                'null' => true
-            ],
             static::FIELD_PREFIX . 'email' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
                 'unique' => true            
             ],
-            static::FIELD_PREFIX . 'status' => [
-                'type' => 'TINYINT',
-                'unsigned' => true,
-                'default' => 10
+            static::FIELD_PREFIX . 'password_hash' => [
+                'type' => 'VARCHAR',
+                'constraint' => '60'
             ],
             static::FIELD_PREFIX . 'created_at' => [ 
                 'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
