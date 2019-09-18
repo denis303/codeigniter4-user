@@ -13,7 +13,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $table = 'user';
 
-    protected $primaryKey = self::FIELD_PREFIX . 'user_id';
+    protected $primaryKey = self::FIELD_PREFIX . 'id';
 
     protected $defaultStatus = null;
 
