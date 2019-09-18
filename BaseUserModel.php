@@ -4,7 +4,6 @@ namespace denis303\user;
 
 use Exception;
 use Config\Services;
-use CodeIgniter\Entity;
 
 abstract class BaseUserModel extends \App\Components\BaseModel
 {
@@ -42,7 +41,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         foreach($data as $key => $value)
         {
-            $user->$key = $value;
+            $this->setUserField($user, $key, $value);
         }
 
         $this->beforeCreateUser($user, $data);
@@ -57,33 +56,65 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         return $user;
     }
 
-    public function beforeCreateUser(Entity $user, array $data)
+    public function beforeCreateUser($user, array $data)
     {
     }
 
-    public function setPassword(Entity $user, string $password)
+    public function setPassword($user, string $password)
     {
-        $user->{static::FIELD_PREFIX . 'password_hash'} = password_hash($password, PASSWORD_BCRYPT);
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+    
+        $this->setUserField($user, 'password_hash', $password_hash);
     }
 
-    public function setStatus(Entity $user, $status)
+    public function setStatus($user, $status)
     {
         $user->status = $status;
     }
 
-    public function validatePassword(Entity $user, string $password) : bool
+    public function validatePassword($user, string $password) : bool
     {
-        return password_verify($password, $user->{static::FIELD_PREFIX . 'password_hash'});
+        $password_hash = $this->getUserField($user, 'password_hash');
+
+        return password_verify($password, $password_hash);
     }
 
-    public function getUserEmail(Entity $user)
+    public function getUserField($user, string $field)
     {
-        return $user->{static::FIELD_PREFIX . 'email'};
+        $field = static::FIELD_PREFIX . $field;
+
+        if (is_array($user))
+        {
+            return $user[$field];
+        }
+        else
+        {
+            return $user->$field;
+        }
     }
 
-    public function getUserName(Entity $user)
+    public function setUserField($user, string $field, $value)
     {
-        return $user->{static::FIELD_PREFIX . 'name'};
-    }    
+        $field = static::FIELD_PREFIX . $field;
+
+        if (is_array($user))
+        {
+            $user[$field] = $value;
+        }
+        else
+        {
+            $user->$field = $value;
+        }
+    }
+
+    public function getUserEmail($user)
+    {
+        return $this->getUserField($user, 'email');
+    }
+
+    public function getUserName($user)
+    {
+        return $this->getUserField($user, 'name');
+    }
 
 }
