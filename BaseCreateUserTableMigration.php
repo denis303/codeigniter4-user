@@ -5,53 +5,53 @@ namespace denis303\user;
 abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigration
 {
 
-    public $table = 'user';
+    const FIELD_PREFIX = 'user_';
 
-    public $fieldPrefix = 'user_';
+    public $table = 'user';
 
     public function getFields()
     {
         return [
-            $this->fieldPrefix . 'id' => [
+            static::FIELD_PREFIX . 'id' => [
                 'type' => 'INT',
                 'constraint' => 11,
                 'auto_increment' => true,
                 'unsigned' => true
             ],
-            $this->fieldPrefix . 'name' => [
+            static::FIELD_PREFIX . 'name' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255'
             ],
-            $this->fieldPrefix . 'password_hash' => [
+            static::FIELD_PREFIX . 'password_hash' => [
                 'type' => 'VARCHAR',
                 'constraint' => '60'
             ],
-            $this->fieldPrefix . 'password_reset_token' => [
+            static::FIELD_PREFIX . 'password_reset_token' => [
                 'type' => 'VARCHAR',
                 'constraint' => '32',
                 'unique' => true,
                 'null' => true
             ],
-            $this->fieldPrefix . 'verification_token' => [
+            static::FIELD_PREFIX . 'verification_token' => [
                 'type' => 'VARCHAR',
                 'constraint' => '32',
                 'unique' => true,
                 'null' => true
             ],
-            $this->fieldPrefix . 'email' => [
+            static::FIELD_PREFIX . 'email' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
                 'unique' => true            
             ],
-            $this->fieldPrefix . 'status' => [
+            static::FIELD_PREFIX . 'status' => [
                 'type' => 'TINYINT',
                 'unsigned' => true,
                 'default' => 10
             ],
-            $this->fieldPrefix . 'created_at' => [ 
+            static::FIELD_PREFIX . 'created_at' => [ 
                 'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
             ],
-            $this->fieldPrefix . 'updated_at' => [
+            static::FIELD_PREFIX . 'updated_at' => [
                 'type' => 'DATETIME',
                 'null' => true
             ]
@@ -62,7 +62,7 @@ abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigratio
 	{
         $this->forge->addField($this->getFields());
 
-        $this->forge->addKey($this->fieldPrefix . 'id', true);
+        $this->forge->addKey(static::FIELD_PREFIX . 'id', true);
 
         $this->beforeCreateTable();
 
