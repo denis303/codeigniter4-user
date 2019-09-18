@@ -26,7 +26,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $returnType = Entity::class;
 
-    public function createUser(array $data, & $error = null)
+    public function createUser(array $data, &$error = null)
     {
         $class = $this->returnType;
 
@@ -41,7 +41,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         foreach($data as $key => $value)
         {
-            $this->setUserField($user, $key, $value);
+            $user->$key = $value;
         }
 
         $this->beforeCreateUser($user, $data);
@@ -79,9 +79,12 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         return password_verify($password, $password_hash);
     }
 
-    public function getUserField($user, string $field)
+    public function getUserField($user, string $field, bool $applyPrefix = true)
     {
-        $field = static::FIELD_PREFIX . $field;
+        if ($applyPrefix)
+        {
+            $field = static::FIELD_PREFIX . $field;
+        }
 
         if (is_array($user))
         {
@@ -93,9 +96,12 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         }
     }
 
-    public function setUserField($user, string $field, $value)
+    public function setUserField($user, string $field, $value, bool $applyPrefix = true)
     {
-        $field = static::FIELD_PREFIX . $field;
+        if ($applyPrefix)
+        {
+            $field = static::FIELD_PREFIX . $field;
+        }
 
         if (is_array($user))
         {
@@ -109,12 +115,12 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public function getUserEmail($user)
     {
-        return $this->getUserField($user, 'email');
+        return $this->getUserField($user, 'email', true);
     }
 
     public function getUserName($user)
     {
-        return $this->getUserField($user, 'name');
+        return $this->getUserField($user, 'name', true);
     }
 
 }
