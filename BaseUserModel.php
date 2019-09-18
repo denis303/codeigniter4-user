@@ -1,6 +1,6 @@
 <?php
 
-namespace denis303\user\Models;
+namespace denis303\user;
 
 use Exception;
 use Config\Services;

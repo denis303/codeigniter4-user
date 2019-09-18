@@ -1,68 +1,93 @@
 <?php
 
-namespace denis303\user\Database\Migrations;
+namespace denis303\user;
 
-class CreateUserTable extends \App\Components\BaseMigration
+abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigration
 {
 
     public $table = 'user';
 
-	public function up()
-	{
-        $this->forge->addField([
-            'user_id' => [
+    public $fieldPrefix = 'user_';
+
+    public function getFields()
+    {
+        return [
+            $this->fieldPrefix . 'id' => [
                 'type' => 'INT',
                 'constraint' => 11,
                 'auto_increment' => true,
                 'unsigned' => true
             ],
-            'user_name' => [
+            $this->fieldPrefix . 'name' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255'
             ],
-            'user_password_hash' => [
+            $this->fieldPrefix . 'password_hash' => [
                 'type' => 'VARCHAR',
                 'constraint' => '60'
             ],
-            'user_password_reset_token' => [
+            $this->fieldPrefix . 'password_reset_token' => [
                 'type' => 'VARCHAR',
                 'constraint' => '32',
                 'unique' => true,
                 'null' => true
             ],
-            'user_verification_token' => [
+            $this->fieldPrefix . 'verification_token' => [
                 'type' => 'VARCHAR',
                 'constraint' => '32',
                 'unique' => true,
                 'null' => true
             ],
-            'user_email' => [
+            $this->fieldPrefix . 'email' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
                 'unique' => true            
             ],
-            'user_status' => [
+            $this->fieldPrefix . 'status' => [
                 'type' => 'TINYINT',
                 'unsigned' => true,
                 'default' => 10
             ],
-            'user_created_at' => [ 
+            $this->fieldPrefix . 'created_at' => [ 
                 'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
             ],
-            'user_updated_at' => [
+            $this->fieldPrefix . 'updated_at' => [
                 'type' => 'DATETIME',
                 'null' => true
             ]
-        ]);
+        ];
+    }
 
-        $this->forge->addKey('user_id', true);
+	public function up()
+	{
+        $this->forge->addField($this->getFields());
+
+        $this->forge->addKey($this->fieldPrefix . 'id', true);
+
+        $this->beforeCreateTable();
 
         $this->forge->createTable($this->table, false, $this->tableOptions());
+
+        $this->afterUp();
 	}
+
+    public function beforeCreateTable()
+    {
+    }
 
 	public function down()
 	{
+        $this->beforeDown();
+
         $this->forge->dropTable($this->table);
 	}
+
+    public function afterUp()
+    {
+    }
+
+    public function beforeDown()
+    {
+    }
 
 }
