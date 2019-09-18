@@ -4,6 +4,7 @@ namespace denis303\user;
 
 use Exception;
 use Config\Services;
+use App\Models\User;
 
 abstract class BaseUserModel extends \App\Components\BaseModel
 {
@@ -30,7 +31,9 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public function createUser(array $data, & $error = null)
     {
-        $user = new User;
+        $class = $this->returnType;
+
+        $user = new $class;
 
         if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
         {
