@@ -54,7 +54,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         if ($this->defaultStatus)
         {
-            $this->setStatus($this->defaultStatus);
+            $this->setStatus($user, $this->defaultStatus);
         }
 
         if (!$this->save($user))
