@@ -4,6 +4,7 @@ namespace denis303\user;
 
 use Exception;
 use Config\Services;
+use CodeIgniter\Entity;
 
 abstract class BaseUserModel extends \App\Components\BaseModel
 {
@@ -13,8 +14,6 @@ abstract class BaseUserModel extends \App\Components\BaseModel
     protected $table = 'user';
 
     protected $primaryKey = self::FIELD_PREFIX . 'id';
-
-    protected $defaultStatus = null;
 
     protected $allowedFields = [
         self::FIELD_PREFIX . 'name',
@@ -65,11 +64,6 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
     
         $this->setUserField($user, 'password_hash', $password_hash);
-    }
-
-    public function setStatus($user, $status)
-    {
-        $user->status = $status;
     }
 
     public function validatePassword($user, string $password) : bool
