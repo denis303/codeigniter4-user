@@ -8,24 +8,22 @@ use Config\Services;
 abstract class BaseUserModel extends \App\Components\BaseModel
 {
 
-    const STATUS_DELETED = 1;
-
-    const STATUS_INACTIVE = 9;
-
-    const STATUS_ACTIVE = 10;
+    const FIELD_PREFIX = 'user_';
 
     protected $table = 'user';
 
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = self::FIELD_PREFIX . 'user_id';
+
+    protected $defaultStatus = null;
 
     protected $allowedFields = [
-        'user_name',
-        'user_password_hash',
-        'user_password_reset_token',
-        'user_verification_token',
-        'user_email',
-        'user_created_at',
-        'user_updated_at'
+        self::FIELD_PREFIX . 'name',
+        self::FIELD_PREFIX . 'password_hash',
+        self::FIELD_PREFIX . 'password_reset_token',
+        self::FIELD_PREFIX . 'verification_token',
+        self::FIELD_PREFIX . 'email',
+        self::FIELD_PREFIX . 'created_at',
+        self::FIELD_PREFIX . 'updated_at'
     ];
 
     protected $returnType = User::class;
@@ -34,11 +32,11 @@ abstract class BaseUserModel extends \App\Components\BaseModel
     {
         $user = new User;
 
-        if (array_key_exists('user_password', $data))
+        if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
         {
-            $this->setPassword($user, $data['user_password']);
+            $this->setPassword($user, $data[static::FIELD_PREFIX . 'password']);
 
-            unset($data['user_password']);
+            unset($data[static::FIELD_PREFIX . 'password']);
         }
 
         foreach($data as $key => $value)
@@ -51,9 +49,9 @@ abstract class BaseUserModel extends \App\Components\BaseModel
             $this->generateEmailVerificationToken($user);
         }
 
-        if (!$user->status)
+        if ($this->defaultStatus)
         {
-            $this->setStatusInactive($user);
+            $this->setStatus($this->defaultStatus);
         }
 
         if (!$this->save($user))
@@ -68,7 +66,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public function setPassword(User $user, string $password)
     {
-        $user->user_password_hash = password_hash($password, PASSWORD_BCRYPT);
+        $user->{static::FIELD_PREFIX . 'password_hash'} = password_hash($password, PASSWORD_BCRYPT);
     }
 
     public function setStatus(User $user, $status)
@@ -76,39 +74,24 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         $user->status = $status;
     }
 
-    public function setStatusActive(User $user)
-    {
-        $this->setStatus(static::STATUS_ACTIVE);
-    }
-
-    public function setStatusInactive(User $user)
-    {
-        $this->setStatus(static::STATUS_INACTIVE);
-    }    
-
-    public function setStatusDeleted(User $user)
-    {
-        $this->setStatus(static::STATUS_INACTIVE);
-    } 
-
     public function generateEmailVerificationToken(User $user)
     {
-        $user->user_verification_token = md5(time() . rand(0, PHP_INT_MAX));
+        $user->{static::FIELD_PREFIX . 'verification_token'} = md5(time() . rand(0, PHP_INT_MAX));
     }
 
     public function validatePassword(User $user, string $password) : bool
     {
-        return password_verify($password, $user->user_password_hash);
+        return password_verify($password, $user->{static::FIELD_PREFIX . 'password_hash'});
     }
 
     public function getUserEmail(User $user)
     {
-        return $user->user_email;
+        return $user->{static::FIELD_PREFIX . 'email'};
     }
 
     public function getUserName(User $user)
     {
-        return $user->user_name;
+        return $user->{static::FIELD_PREFIX . 'name'};
     }    
 
 }
