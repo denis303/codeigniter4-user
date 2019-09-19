@@ -24,6 +24,15 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $returnType = Entity::class;
 
+    public static function saveUser($user, &$error)
+    {
+        $class = get_called_class();
+
+        $model = new $class;
+
+        return $model->saveUprotected($error);
+    }
+
     public static function findByEmail($email)
     {
         $class = get_called_class();
