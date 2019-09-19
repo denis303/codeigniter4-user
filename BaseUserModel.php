@@ -51,7 +51,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
     {
         if ($applyPrefix)
         {
-            $field = UserModel::FIELD_PREFIX . $field;
+            $field = static::FIELD_PREFIX . $field;
         }
 
         if (is_array($user))
