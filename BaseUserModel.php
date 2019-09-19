@@ -33,7 +33,65 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         return $model->where([$model::FIELD_PREFIX . 'email' => $email])->first();
     }
 
-    public static function createUser(array $data, &$error = null)
+    public static function setUserPassword($user, string $password)
+    {
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+    
+        static::setUserField($user, 'password_hash', $password_hash);
+    }
+
+    public static function validateUserPassword($user, string $password) : bool
+    {
+        $password_hash = static::getField($user, 'password_hash');
+
+        return password_verify($password, $password_hash);
+    }
+
+    public static function getUserField($user, string $field, bool $applyPrefix = true)
+    {
+        if ($applyPrefix)
+        {
+            $field = UserModel::FIELD_PREFIX . $field;
+        }
+
+        if (is_array($user))
+        {
+            return $user[$field];
+        }
+        else
+        {
+            return $user->$field;
+        }
+    }
+
+    public static function setUserField($user, string $field, $value, bool $applyPrefix = true)
+    {
+        if ($applyPrefix)
+        {
+            $field = static::FIELD_PREFIX . $field;
+        }
+
+        if (is_array($user))
+        {
+            $user[$field] = $value;
+        }
+        else
+        {
+            $user->$field = $value;
+        }
+    }
+
+    public static function getUserEmail($user)
+    {
+        return static::getUserField($user, 'email', true);
+    }
+
+    public static function getUserName($user)
+    {
+        return static::getUserField($user, 'name', true);
+    }
+
+   public static function createUser(array $data, &$error = null)
     {
         $class = get_called_class();
 
@@ -71,64 +129,6 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public function beforeCreateUser($user, array $data)
     {
-    }    
-
-    public function setUserPassword($user, string $password)
-    {
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
-    
-        static::setField($user, 'password_hash', $password_hash);
-    }
-
-    public function validateUserPassword($user, string $password) : bool
-    {
-        $password_hash = static::getField($user, 'password_hash');
-
-        return password_verify($password, $password_hash);
-    }
-
-    public function getUserField($user, string $field, bool $applyPrefix = true)
-    {
-        if ($applyPrefix)
-        {
-            $field = UserModel::FIELD_PREFIX . $field;
-        }
-
-        if (is_array($user))
-        {
-            return $user[$field];
-        }
-        else
-        {
-            return $user->$field;
-        }
-    }
-
-    public function setUserField($user, string $field, $value, bool $applyPrefix = true)
-    {
-        if ($applyPrefix)
-        {
-            $field = static::FIELD_PREFIX . $field;
-        }
-
-        if (is_array($user))
-        {
-            $user[$field] = $value;
-        }
-        else
-        {
-            $user->$field = $value;
-        }
-    }
-
-    public function getUserEmail($user)
-    {
-        return $this->getUserField($user, 'email', true);
-    }
-
-    public function getUserName($user)
-    {
-        return $this->getUserField($user, 'name', true);
     }
 
 }
