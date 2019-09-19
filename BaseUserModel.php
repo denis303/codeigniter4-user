@@ -117,4 +117,13 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         return $this->getUserField($user, 'name', true);
     }
 
+    public static function findByEmail($email)
+    {
+        $class = get_called_class();
+
+        $model = new $class;
+
+        return $model->where([static::FIELD_PREFIX . 'email' => $email])->first();
+    }
+
 }
