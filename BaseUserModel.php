@@ -25,55 +25,21 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $returnType = Entity::class;
 
-    public function createUser(array $data, &$error = null)
-    {
-        $class = $this->returnType;
-
-        $user = new $class;
-
-        if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
-        {
-            $this->setPassword($user, $data[static::FIELD_PREFIX . 'password']);
-
-            unset($data[static::FIELD_PREFIX . 'password']);
-        }
-
-        foreach($data as $key => $value)
-        {
-            $user->$key = $value;
-        }
-
-        $this->beforeCreateUser($user, $data);
-
-        if (!$this->save($user))
-        {
-            $error = $this->firstError();
-
-            return false;
-        }
-
-        return $user;
-    }
-
-    public function beforeCreateUser($user, array $data)
-    {
-    }
-
-    public function setPassword($user, string $password)
+    public static function setPassword($user, string $password)
     {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
     
-        $this->setUserField($user, 'password_hash', $password_hash);
+        static::setField($user, 'password_hash', $password_hash);
     }
 
-    public function validatePassword($user, string $password) : bool
+    public static function validatePassword($user, string $password) : bool
     {
-        $password_hash = $this->getUserField($user, 'password_hash');
+        $password_hash = static::getField($user, 'password_hash');
 
         return password_verify($password, $password_hash);
     }
 
-    public function getUserField($user, string $field, bool $applyPrefix = true)
+    public static function getField($user, string $field, bool $applyPrefix = true)
     {
         if ($applyPrefix)
         {
@@ -90,7 +56,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         }
     }
 
-    public function setUserField($user, string $field, $value, bool $applyPrefix = true)
+    public static function setField(&$user, string $field, $value, bool $applyPrefix = true)
     {
         if ($applyPrefix)
         {
@@ -107,14 +73,14 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         }
     }
 
-    public function getUserEmail($user)
+    public static function getEmail($user)
     {
-        return $this->getUserField($user, 'email', true);
+        return static::getField($user, 'email', true);
     }
 
-    public function getUserName($user)
+    public static function getName($user)
     {
-        return $this->getUserField($user, 'name', true);
+        return static::getField($user, 'name', true);
     }
 
     public static function findByEmail($email)
@@ -125,5 +91,45 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         return $model->where([static::FIELD_PREFIX . 'email' => $email])->first();
     }
+
+    public static function createUser(array $data, &$error = null)
+    {
+        $class = $this->returnType;
+
+        $user = new $class;
+
+        if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
+        {
+            static::userSetPassword($user, $data[static::FIELD_PREFIX . 'password']);
+
+            unset($data[static::FIELD_PREFIX . 'password']);
+        }
+
+        foreach($data as $key => $value)
+        {
+            $user->$key = $value;
+        }
+
+        static::beforeCreate($user, $data);
+
+        $class = get_called_class();
+
+        $model = new $class;
+
+        if (!$model->save($user))
+        {
+            $errors = $model->errors();
+
+            $error = array_shift($errors);
+
+            return false;
+        }
+
+        return $user;
+    }
+
+    public static function beforeCreateUser($user, array $data)
+    {
+    }    
 
 }
