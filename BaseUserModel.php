@@ -94,13 +94,17 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public static function createUser(array $data, &$error = null)
     {
-        $class = $this->returnType;
+        $modelClass = get_called_class();
+
+        $model = new $modelClass;
+
+        $class = $model->returnType;
 
         $user = new $class;
 
         if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
         {
-            static::userSetPassword($user, $data[static::FIELD_PREFIX . 'password']);
+            static::setPassword($user, $data[static::FIELD_PREFIX . 'password']);
 
             unset($data[static::FIELD_PREFIX . 'password']);
         }
@@ -110,11 +114,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
             $user->$key = $value;
         }
 
-        static::beforeCreate($user, $data);
-
-        $class = get_called_class();
-
-        $model = new $class;
+        static::beforeCreateUser($user, $data);
 
         if (!$model->save($user))
         {
