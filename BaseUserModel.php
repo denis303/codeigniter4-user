@@ -24,13 +24,19 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $returnType = Entity::class;
 
+    protected $createdField = self::FIELD_PREFIX . 'created_at';
+
+    protected $updatedField = self::FIELD_PREFIX . 'updated_at';
+
+    protected $dateFormat = 'datetime';
+
     public static function saveUser($user, &$error)
     {
         $class = get_called_class();
 
         $model = new $class;
 
-        return $model->saveUprotected($error);
+        return $model->saveUnprotected($user, $error);
     }
 
     public static function findByEmail($email)
@@ -119,7 +125,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         foreach($data as $key => $value)
         {
-            $user->$key = $value;
+            $user->$key = trim(strip_tags($value));
         }
 
         $model->beforeCreateUser($user, $data);
