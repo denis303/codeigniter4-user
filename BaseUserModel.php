@@ -3,7 +3,6 @@
 namespace denis303\user;
 
 use Exception;
-use Config\Services;
 use CodeIgniter\Entity;
 
 abstract class BaseUserModel extends \App\Components\BaseModel
@@ -25,25 +24,74 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     protected $returnType = Entity::class;
 
-    public static function setPassword($user, string $password)
+    public static function findByEmail($email)
+    {
+        $class = get_called_class();
+
+        $model = new $class;
+
+        return $model->where([$model::FIELD_PREFIX . 'email' => $email])->first();
+    }
+
+    public static function createUser(array $data, &$error = null)
+    {
+        $class = get_called_class();
+
+        $model = new $class;
+
+        $class = $model->returnType;
+
+        $user = new $class;
+
+        if (array_key_exists($model::FIELD_PREFIX . 'password', $data))
+        {
+            $this->setPassword($user, $data[$model::FIELD_PREFIX . 'password']);
+
+            unset($data[$model::FIELD_PREFIX . 'password']);
+        }
+
+        foreach($data as $key => $value)
+        {
+            $user->$key = $value;
+        }
+
+        $model->beforeCreateUser($user, $data);
+
+        if (!$model->save($user))
+        {
+            $errors = $model->errors();
+
+            $error = array_shift($errors);
+
+            return false;
+        }
+
+        return $user;
+    }
+
+    public function beforeCreateUser($user, array $data)
+    {
+    }    
+
+    public function setUserPassword($user, string $password)
     {
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
     
         static::setField($user, 'password_hash', $password_hash);
     }
 
-    public static function validatePassword($user, string $password) : bool
+    public function validateUserPassword($user, string $password) : bool
     {
         $password_hash = static::getField($user, 'password_hash');
 
         return password_verify($password, $password_hash);
     }
 
-    public static function getField($user, string $field, bool $applyPrefix = true)
+    public function getUserField($user, string $field, bool $applyPrefix = true)
     {
         if ($applyPrefix)
         {
-            $field = static::FIELD_PREFIX . $field;
+            $field = UserModel::FIELD_PREFIX . $field;
         }
 
         if (is_array($user))
@@ -56,7 +104,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         }
     }
 
-    public static function setField(&$user, string $field, $value, bool $applyPrefix = true)
+    public function setUserField($user, string $field, $value, bool $applyPrefix = true)
     {
         if ($applyPrefix)
         {
@@ -73,63 +121,14 @@ abstract class BaseUserModel extends \App\Components\BaseModel
         }
     }
 
-    public static function getEmail($user)
+    public function getUserEmail($user)
     {
-        return static::getField($user, 'email', true);
+        return $this->getUserField($user, 'email', true);
     }
 
-    public static function getName($user)
+    public function getUserName($user)
     {
-        return static::getField($user, 'name', true);
-    }
-
-    public static function findByEmail($email)
-    {
-        $class = get_called_class();
-
-        $model = new $class;
-
-        return $model->where([static::FIELD_PREFIX . 'email' => $email])->first();
-    }
-
-    public static function createUser(array $data, &$error = null)
-    {
-        $modelClass = get_called_class();
-
-        $model = new $modelClass;
-
-        $class = $model->returnType;
-
-        $user = new $class;
-
-        if (array_key_exists(static::FIELD_PREFIX . 'password', $data))
-        {
-            static::setPassword($user, $data[static::FIELD_PREFIX . 'password']);
-
-            unset($data[static::FIELD_PREFIX . 'password']);
-        }
-
-        foreach($data as $key => $value)
-        {
-            $user->$key = $value;
-        }
-
-        static::beforeCreateUser($user, $data);
-
-        if (!$model->save($user))
-        {
-            $errors = $model->errors();
-
-            $error = array_shift($errors);
-
-            return false;
-        }
-
-        return $user;
-    }
-
-    public static function beforeCreateUser($user, array $data)
-    {
+        return $this->getUserField($user, 'name', true);
     }    
 
 }
