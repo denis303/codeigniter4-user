@@ -51,7 +51,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
     public static function validateUserPassword($user, string $password) : bool
     {
-        $password_hash = static::getField($user, 'password_hash');
+        $password_hash = static::getUserField($user, 'password_hash');
 
         return password_verify($password, $password_hash);
     }
