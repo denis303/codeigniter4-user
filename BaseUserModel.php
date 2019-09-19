@@ -129,6 +129,6 @@ abstract class BaseUserModel extends \App\Components\BaseModel
     public function getUserName($user)
     {
         return $this->getUserField($user, 'name', true);
-    }    
+    }
 
 }
