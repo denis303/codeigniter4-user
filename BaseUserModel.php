@@ -112,7 +112,7 @@ abstract class BaseUserModel extends \App\Components\BaseModel
 
         if (array_key_exists($model::FIELD_PREFIX . 'password', $data))
         {
-            $this->setPassword($user, $data[$model::FIELD_PREFIX . 'password']);
+            static::setUserPassword($user, $data[$model::FIELD_PREFIX . 'password']);
 
             unset($data[$model::FIELD_PREFIX . 'password']);
         }
