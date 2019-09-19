@@ -41,8 +41,8 @@ abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigratio
         ];
     }
 
-	public function up()
-	{
+    public function up()
+    {
         $this->forge->addField($this->getFields());
 
         $this->forge->addKey(static::FIELD_PREFIX . 'id', true);
@@ -52,18 +52,18 @@ abstract class BaseCreateUserTableMigration extends \App\Components\BaseMigratio
         $this->forge->createTable($this->table, false, $this->tableOptions());
 
         $this->afterUp();
-	}
+    }
 
     public function beforeCreateTable()
     {
     }
 
-	public function down()
-	{
+    public function down()
+    {
         $this->beforeDown();
 
         $this->forge->dropTable($this->table);
-	}
+    }
 
     public function afterUp()
     {
