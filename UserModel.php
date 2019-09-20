@@ -139,6 +139,8 @@ abstract class UserModel extends BaseUserModel
             return false;
         }
 
+        $model->setUserField($user, 'id', $model->getInsertID());
+
         return $user;
     }
 
