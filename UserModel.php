@@ -108,9 +108,9 @@ abstract class UserModel extends BaseUserModel
 
    public static function createUser(array $data, &$error = null)
     {
-        $class = get_called_class();
+        $modelClass = get_called_class();
 
-        $model = new $class;
+        $model = new $modelClass;
 
         $class = $model->returnType;
 
@@ -139,9 +139,11 @@ abstract class UserModel extends BaseUserModel
             return false;
         }
 
-        $model->setUserField($user, 'id', $model->getInsertID());
+        $id = $model->getInsertID();
 
-        return $user;
+        $model = new $modelClass;
+
+        return $model->find($id);
     }
 
     public function beforeCreateUser($user, array $data)
