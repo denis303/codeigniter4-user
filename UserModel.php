@@ -30,15 +30,6 @@ abstract class UserModel extends BaseUserModel
 
     protected $dateFormat = 'datetime';
 
-    public static function saveUser($user, &$error)
-    {
-        $class = get_called_class();
-
-        $model = new $class;
-
-        return $model->saveUnprotected($user, $error);
-    }
-
     public static function findByEmail($email)
     {
         $class = get_called_class();
@@ -134,7 +125,14 @@ abstract class UserModel extends BaseUserModel
         {
             $errors = $model->errors();
 
-            $error = array_shift($errors);
+            if ($errors)
+            {
+                $error = array_shift($errors);
+            }
+            else
+            {
+                $error = 'Unknown error.';
+            }
 
             return false;
         }
