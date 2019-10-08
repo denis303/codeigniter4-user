@@ -20,16 +20,19 @@ abstract class CreateUserTableMigration extends BaseCreateUserTableMigration
             ],
             static::FIELD_PREFIX . 'name' => [
                 'type' => 'VARCHAR',
-                'constraint' => '255'
+                'constraint' => '255',
+                'null' => true
             ],
             static::FIELD_PREFIX . 'email' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
-                'unique' => true            
+                'unique' => true,
+                'null' => true            
             ],
             static::FIELD_PREFIX . 'password_hash' => [
                 'type' => 'VARCHAR',
-                'constraint' => '60'
+                'constraint' => '60',
+                'null' => true
             ],
             static::FIELD_PREFIX . 'created_at' => [ 
                 'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
