@@ -36,10 +36,6 @@ abstract class CreateUserTableMigration extends BaseCreateUserTableMigration
             ],
             static::FIELD_PREFIX . 'created_at' => [ 
                 'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
-            ],
-            static::FIELD_PREFIX . 'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true
             ]
         ];
     }
