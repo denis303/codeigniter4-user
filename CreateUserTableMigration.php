@@ -48,7 +48,7 @@ abstract class CreateUserTableMigration extends BaseCreateUserTableMigration
 
         $this->beforeCreateTable();
 
-        $this->forge->createTable($this->table, false, $this->tableOptions());
+        $this->forge->createTable($this->table, false);
 
         $this->afterUp();
     }
