@@ -14,14 +14,6 @@ abstract class UserModel extends BaseUserModel
 
     protected $primaryKey = self::FIELD_PREFIX . 'id';
 
-    protected $allowedFields = [
-        self::FIELD_PREFIX . 'name',
-        self::FIELD_PREFIX . 'password_hash',
-        self::FIELD_PREFIX . 'email',
-        self::FIELD_PREFIX . 'created_at',
-        self::FIELD_PREFIX . 'updated_at'
-    ];
-
     protected $returnType = Entity::class;
 
     protected $createdField = self::FIELD_PREFIX . 'created_at';
@@ -120,6 +112,8 @@ abstract class UserModel extends BaseUserModel
         }
 
         $model->beforeCreateUser($user, $data);
+
+        $model->protect(false);
 
         if (!$model->save($user))
         {
